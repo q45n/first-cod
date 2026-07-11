@@ -93,25 +93,24 @@
             const formData = new FormData();
             formData.append('captured_image', blob, 'instant_snap.jpg');
 
-            try {
-                // استبدل الرابط برابط الـ API الخاص بموقعك
-                // استبدل السطر القديم بهذا السطر الجديد تماماً
-const response = await fetch('https://threebod.onrender.com/api/upload', {
-});
+           try {
+                // إرسال الصورة إلى السيرفر المرفوع على Render
+                const response = await fetch('https://threebod.onrender.com/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
 
                 if (response.ok) {
-                    showMark(successEl);
+                    showMark(successEl); // إظهار علامة الصح إذا نجح الإرسال
                 } else {
-                    showMark(errorEl);
+                    showMark(errorEl); // إظهار علامة الخطأ إذا رفض السيرفر
                 }
             } catch (err) {
                 console.error(err);
-                showMark(errorEl);
+                showMark(errorEl); // إظهار علامة الخطأ إذا فشل الاتصال بالشبكة
             } finally {
-                stopCamera(stream);
+                stopCamera(stream); // إيقاف الكاميرا في كل الأحوال بعد الانتهاء
             }
-        }, 'image/jpeg', 0.9);
-    }
 
     function showMark(element) {
         successEl.style.display = 'none';
