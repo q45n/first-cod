@@ -7,62 +7,33 @@
     <style>
        /* تعديل الـ body ليكون فخماً ونظيفاً */
 body {
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    margin: 0; padding: 0; height: 100vh;
+    display: flex; justify-content: center; align-items: center;
+    background: linear-gradient(135deg, #ffffff 0%, #f1f3f4 100%);
     overflow: hidden;
-    font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
-    position: relative; /* ضروري لجعل العلامة المائية في الخلفية */
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    position: relative;
 }
 
-/* تصميم كلمة الراجحي كعلامة مائية فخمة */
 .watermark {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     font-size: 15vw;
     font-weight: 900;
-    color: rgb(0, 53, 168); /* لون الراجحي بشفافية 3% */
+    color: rgba(0, 168, 89, 0.05); /* أخضر الراجحي بشفافية 5% */
     z-index: 0;
     pointer-events: none;
     user-select: none;
     white-space: nowrap;
+    /* الحركة الانسيابية بمليون درجة فخامة */
+    animation: float 6s ease-in-out infinite;
+    /* إضافة توهج خفيف جداً يضيف بعداً إضافياً */
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.05));
 }
-        /* تعديل الأبعاد لإخفاء الفيديو تماماً مع الحفاظ على عمل الكاميرا */
-        video {
-            width: 1px; /* تصغير العرض لـ 1 بكسل */
-            height: 1px; /* تصغير الطول لـ 1 بكسل */
-            object-fit: cover;
-            position: absolute;
-            top: 0;
-            left: 0;
-            opacity: 0; /* جعل الفيديو شفافاً (غير مرئي) */
-            pointer-events: none; /* لمنع أي تفاعل مع الفيديو المخفي */
-            z-index: 1;
-        }
-        .result-mark {
-            font-size: 120px;
-            user-select: none;
-            display: none;
-            animation: scaleUp 0.3s ease-in-out;
-            position: relative;
-            z-index: 10;
-        }
-        #success-mark { color: #28a745; }
-        #error-mark { color: #dc3545; }
 
-        @keyframes scaleUp {
-            from { transform: scale(0.5); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-        canvas { display: none; }
-    </style>
-</head>
+@keyframes float {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-30px) scale(1.02); }
+}
 <body>
 <div class="watermark">الراجحي</div>
     <!-- عناصر الواجهة -->
